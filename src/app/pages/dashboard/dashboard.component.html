@@ -1,0 +1,93 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Painel</h1>
+    <p class="adm-page__lead">
+      Visão geral da plataforma: condomínios registados e cobranças SaaS em aberto
+      no mês corrente.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  } @else {
+    @if (summary(); as s) {
+      <div class="adm-stat-grid">
+        <article class="adm-stat">
+          <p class="adm-stat__label">Condomínios</p>
+          <p class="adm-stat__value">{{ s.condominiumTotal }}</p>
+          <p class="adm-stat__hint">Total na plataforma</p>
+        </article>
+        <article class="adm-stat">
+          <p class="adm-stat__label">Cobranças pendentes</p>
+          <p class="adm-stat__value">{{ s.pendingChargesThisMonth }}</p>
+          <p class="adm-stat__hint">Mês de referência {{ s.referenceMonth }}</p>
+        </article>
+      </div>
+
+      <section class="adm-card dash-bulk">
+        <div class="adm-card__header">
+          <h2 class="adm-card__title">Cobrança em massa</h2>
+          <p class="adm-card__desc">
+            Gera cobranças na Asaas para <strong>todos os condomínios</strong>, com
+            valor = preço por unidade do plano do titular × número de unidades.
+          </p>
+        </div>
+        <div class="adm-card__body">
+          <div class="adm-form-grid adm-form-grid--2 dash-bulk__row">
+            <div class="adm-field">
+              <span>Mês (YYYY-MM)</span>
+              <input class="adm-input" type="text" [(ngModel)]="bulkMonth" />
+            </div>
+            <div class="adm-field">
+              <span>Vencimento (opcional)</span>
+              <input class="adm-input" type="date" [(ngModel)]="bulkDue" />
+            </div>
+          </div>
+          <button
+            type="button"
+            class="adm-btn adm-btn--primary"
+            [disabled]="bulkLoading()"
+            (click)="runBulk()"
+          >
+            {{ bulkLoading() ? 'A processar…' : 'Gerar para todos os condomínios' }}
+          </button>
+          @if (bulkMsg()) {
+            <p class="dash-bulk__msg">{{ bulkMsg() }}</p>
+          }
+          @if (bulkResults(); as rows) {
+            <div class="dash-bulk__table-wrap">
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>Condomínio (ID)</th>
+                    <th>Resultado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (r of rows; track r.condominiumId) {
+                    <tr>
+                      <td class="cell-muted">{{ r.condominiumId }}</td>
+                      <td>
+                        @if (r.ok) {
+                          <span class="adm-badge adm-badge--success">OK</span>
+                          @if (r.reused) {
+                            <span class="cell-muted"> (já existia)</span>
+                          }
+                        } @else {
+                          <span class="adm-badge adm-badge--danger">Erro</span>
+                          <div class="dash-bulk__err">{{ r.error }}</div>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </section>
+    } @else {
+      <p class="adm-loading">A carregar indicadores…</p>
+    }
+  }
+</div>

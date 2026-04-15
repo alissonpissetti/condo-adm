@@ -1,0 +1,60 @@
+<div class="login">
+  <div class="login__hero" aria-hidden="true">
+    <div class="login__hero-inner">
+      <div class="login__mark">C</div>
+      <h2 class="login__hero-title">Condo Plataforma</h2>
+      <p class="login__hero-text">
+        Painel administrativo para gestão de condomínios, clientes e faturação
+        SaaS integrada com Asaas.
+      </p>
+    </div>
+  </div>
+
+  <div class="login__panel">
+    <div class="login__card">
+      <header class="login__header">
+        <h1 class="login__title">Iniciar sessão</h1>
+        <p class="login__subtitle">
+          Utilize a conta com permissão de administrador da plataforma.
+        </p>
+      </header>
+
+      @if (notice()) {
+        <div class="adm-alert adm-alert--info" role="status">{{ notice() }}</div>
+      }
+
+      <form class="login__form" (ngSubmit)="submit()">
+        <div class="adm-field">
+          <span>E-mail</span>
+          <input
+            class="adm-input"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            autocomplete="username"
+          />
+        </div>
+        <div class="adm-field">
+          <span>Palavra-passe</span>
+          <input
+            class="adm-input"
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        @if (error()) {
+          <div class="adm-alert adm-alert--error" role="alert">{{ error() }}</div>
+        }
+
+        <button class="adm-btn adm-btn--primary login__submit" type="submit" [disabled]="loading()">
+          {{ loading() ? 'A entrar…' : 'Entrar' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

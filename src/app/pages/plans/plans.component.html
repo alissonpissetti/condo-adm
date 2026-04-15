@@ -1,0 +1,308 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Planos SaaS</h1>
+    <p class="adm-page__lead">
+      Preço por <strong>unidade condominal</strong> por mês — <strong>valor único</strong> ou
+      <strong>faixas por número total de unidades</strong> (progressivo). O plano
+      <strong>padrão</strong> aplica-se a novos registos. O site usa o catálogo público
+      automaticamente.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  }
+
+  @if (msg()) {
+    <div class="adm-alert adm-alert--info">{{ msg() }}</div>
+  }
+
+  <section class="adm-card plans-new">
+    <div class="adm-card__header">
+      <h2 class="adm-card__title">Novo plano</h2>
+    </div>
+    <div class="adm-card__body plans-new__body plans-new__body--stack">
+      <div class="adm-field">
+        <span>Nome</span>
+        <input class="adm-input" type="text" [(ngModel)]="newName" />
+      </div>
+      <label class="chk chk--block">
+        <input
+          type="checkbox"
+          [checked]="newUseTiers"
+          (change)="onNewTiersModeChange($event)"
+        />
+        <span>Usar <strong>faixas por unidades</strong> (em vez de preço único)</span>
+      </label>
+      @if (!newUseTiers) {
+        <div class="adm-field">
+          <span>Preço por unidade (R$ / mês)</span>
+          <input
+            class="adm-input"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="newPriceReais"
+          />
+        </div>
+      } @else {
+        <div class="tiers-editor">
+          <p class="tiers-hint">
+            Primeira faixa com mínimo <strong>1</strong>. Preencha os máximos; na
+            <strong>última</strong> linha deixe <strong>Até</strong> vazio (= sem limite).
+          </p>
+          <div class="tiers-grid tiers-grid--head">
+            <span>De (unid.)</span>
+            <span>Até (unid.)</span>
+            <span>R$ / un. / mês</span>
+            <span></span>
+          </div>
+          @for (line of newTierLines; track $index; let i = $index) {
+            <div class="tiers-grid">
+              <input
+                class="adm-input"
+                type="number"
+                min="1"
+                [(ngModel)]="line.minUnits"
+                [name]="'nm' + i"
+              />
+              <input
+                class="adm-input"
+                type="number"
+                min="1"
+                [(ngModel)]="line.maxUnits"
+                [name]="'nx' + i"
+                [readonly]="i === newTierLines.length - 1"
+                [attr.placeholder]="i === newTierLines.length - 1 ? 'vazio' : ''"
+              />
+              <input
+                class="adm-input"
+                type="text"
+                [(ngModel)]="line.priceReais"
+                [name]="'np' + i"
+                placeholder="8,00"
+              />
+              <button
+                type="button"
+                class="adm-btn adm-btn--secondary"
+                (click)="removeNewTierLine(i)"
+                [disabled]="newTierLines.length <= 1"
+              >
+                Remover
+              </button>
+            </div>
+          }
+          <button type="button" class="adm-btn adm-btn--ghost" (click)="addNewTierLine()">
+            + Adicionar faixa
+          </button>
+        </div>
+      }
+      <button type="button" class="adm-btn adm-btn--primary" (click)="create()">
+        Adicionar plano
+      </button>
+    </div>
+  </section>
+
+  <div class="adm-table-shell">
+    <div class="adm-table-scroll">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Activo</th>
+            <th>Padrão</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of plans(); track p.id) {
+            <tr>
+              <td class="cell-muted">{{ p.id }}</td>
+              <td>
+                @if (editingId === p.id) {
+                  <input class="adm-input" type="text" [(ngModel)]="editName" />
+                } @else {
+                  <span class="cell-strong">{{ p.name }}</span>
+                }
+              </td>
+              <td>
+                @if (editingId === p.id) {
+                  <span class="cell-muted">Ver secção abaixo</span>
+                } @else {
+                  {{ priceLabel(p) }}
+                }
+              </td>
+              <td>
+                @if (editingId === p.id) {
+                  <label class="chk"
+                    ><input type="checkbox" [(ngModel)]="editActive" /> Activo</label
+                  >
+                } @else {
+                  <span
+                    class="adm-badge"
+                    [class.adm-badge--success]="p.active"
+                    [class.adm-badge--neutral]="!p.active"
+                    >{{ p.active ? 'Sim' : 'Não' }}</span
+                  >
+                }
+              </td>
+              <td>
+                @if (p.isDefault) {
+                  <span class="adm-badge adm-badge--success">Padrão</span>
+                } @else {
+                  <span class="cell-muted">—</span>
+                }
+              </td>
+              <td class="plans-actions">
+                @if (editingId === p.id) {
+                  <button
+                    type="button"
+                    class="adm-btn adm-btn--primary"
+                    (click)="saveEdit(p.id)"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    class="adm-btn adm-btn--secondary"
+                    (click)="cancelEdit()"
+                  >
+                    Cancelar
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="adm-btn adm-btn--ghost"
+                    (click)="startEdit(p)"
+                  >
+                    Editar
+                  </button>
+                  @if (!p.isDefault) {
+                    <button
+                      type="button"
+                      class="adm-btn adm-btn--secondary"
+                      (click)="setDefault(p.id)"
+                    >
+                      Tornar padrão
+                    </button>
+                  }
+                }
+              </td>
+            </tr>
+            @if (editingId === p.id) {
+              <tr class="plans-detail-row">
+                <td colspan="6">
+                  <div class="plans-detail">
+                    <div class="plans-detail__grid">
+                      <div class="adm-field">
+                        <span>Moeda (ISO)</span>
+                        <input class="adm-input" type="text" [(ngModel)]="editCurrency" />
+                      </div>
+                    </div>
+                    <div class="adm-field">
+                      <span>Texto do catálogo (site) — uma linha por destaque</span>
+                      <textarea
+                        class="adm-input adm-textarea"
+                        rows="3"
+                        [(ngModel)]="editCatalogBlurb"
+                      ></textarea>
+                    </div>
+                    <div class="adm-field">
+                      <span>Notas internas</span>
+                      <textarea
+                        class="adm-input adm-textarea"
+                        rows="2"
+                        [(ngModel)]="editNotes"
+                      ></textarea>
+                    </div>
+                    <label class="chk chk--block">
+                      <input
+                        type="checkbox"
+                        [checked]="editUseTiers"
+                        (change)="onEditTiersModeChange($event)"
+                      />
+                      <span
+                        ><strong>Preço por faixas de unidades</strong> (todas as unidades
+                        pagam a tarifa da faixa correspondente ao total)</span
+                      >
+                    </label>
+                    @if (editUseTiers) {
+                      <div class="tiers-editor">
+                        <p class="tiers-hint">
+                          Na última linha deixe <strong>Até</strong> vazio. As faixas devem
+                          ser contíguas (a API valida).
+                        </p>
+                        <div class="tiers-grid tiers-grid--head">
+                          <span>De (unid.)</span>
+                          <span>Até (unid.)</span>
+                          <span>R$ / un. / mês</span>
+                          <span></span>
+                        </div>
+                        @for (line of editTierLines; track $index; let i = $index) {
+                          <div class="tiers-grid">
+                            <input
+                              class="adm-input"
+                              type="number"
+                              min="1"
+                              [(ngModel)]="line.minUnits"
+                              [name]="'em' + i"
+                            />
+                            <input
+                              class="adm-input"
+                              type="number"
+                              min="1"
+                              [(ngModel)]="line.maxUnits"
+                              [name]="'ex' + i"
+                              [readonly]="i === editTierLines.length - 1"
+                              [attr.placeholder]="
+                                i === editTierLines.length - 1 ? 'vazio' : ''
+                              "
+                            />
+                            <input
+                              class="adm-input"
+                              type="text"
+                              [(ngModel)]="line.priceReais"
+                              [name]="'ep' + i"
+                            />
+                            <button
+                              type="button"
+                              class="adm-btn adm-btn--secondary"
+                              (click)="removeEditTierLine(i)"
+                              [disabled]="editTierLines.length <= 1"
+                            >
+                              Remover
+                            </button>
+                          </div>
+                        }
+                        <button
+                          type="button"
+                          class="adm-btn adm-btn--ghost"
+                          (click)="addEditTierLine()"
+                        >
+                          + Adicionar faixa
+                        </button>
+                      </div>
+                    } @else {
+                      <div class="adm-field">
+                        <span>Preço por unidade (R$ / mês)</span>
+                        <input
+                          class="adm-input"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          [(ngModel)]="editPriceReais"
+                        />
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

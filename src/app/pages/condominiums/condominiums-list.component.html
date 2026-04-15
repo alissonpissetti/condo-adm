@@ -1,0 +1,88 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Condomínios</h1>
+    <p class="adm-page__lead">
+      Todos os condomínios da plataforma, titular, valores SaaS e última cobrança.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  } @else {
+    <div class="adm-table-shell">
+      <div class="adm-table-scroll">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Titular</th>
+              <th>Valor mensal</th>
+              <th>Faturação</th>
+              <th>Última cobrança</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of items(); track c.id) {
+              <tr>
+                <td class="cell-strong">{{ c.name }}</td>
+                <td class="cell-muted">{{ c.ownerEmail }}</td>
+                <td>
+                  @if (c.billing) {
+                    {{ formatCents(c.billing.monthlyAmountCents) }}
+                  } @else {
+                    <span class="cell-muted">—</span>
+                  }
+                </td>
+                <td>
+                  <span [class]="billingBadgeClass(c.billing)">{{
+                    billingBadgeText(c.billing)
+                  }}</span>
+                </td>
+                <td>
+                  @if (c.lastCharge) {
+                    <div class="last-cell">
+                      <span class="cell-strong">{{ c.lastCharge.referenceMonth }}</span>
+                      <span [class]="chargeBadgeClass(c.lastCharge.status)">{{
+                        chargeStatusLabel(c.lastCharge.status)
+                      }}</span>
+                    </div>
+                  } @else {
+                    <span class="cell-muted">—</span>
+                  }
+                </td>
+                <td>
+                  <a class="adm-link" [routerLink]="['/app/condominios', c.id]"
+                    >Abrir</a
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="adm-pager">
+      <span class="adm-pager__meta">
+        Página {{ page() }} de {{ totalPages() }} · {{ total() }} condomínios
+      </span>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() <= 1"
+        (click)="prev()"
+      >
+        Anterior
+      </button>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() * limit >= total()"
+        (click)="next()"
+      >
+        Seguinte
+      </button>
+    </div>
+  }
+</div>

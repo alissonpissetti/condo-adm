@@ -1,0 +1,389 @@
+.detail__field-full {
+  grid-column: 1 / -1;
+}
+
+.detail__back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.detail__grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 960px) {
+  .detail__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.detail__hint {
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--adm-text-secondary);
+  line-height: 1.5;
+}
+
+.detail__hint code {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--adm-surface-2);
+}
+
+.detail__charges {
+  margin-top: 0;
+}
+
+.adm-card__body--flush {
+  padding: 0;
+}
+
+.detail__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.detail .adm-card__body form.adm-form-grid {
+  gap: 1.1rem;
+}
+
+.detail .adm-alert {
+  margin-bottom: 1rem;
+}
+
+/* ——— Cartões destacados (faturação + voucher) ——— */
+.detail-card {
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.detail-card:hover {
+  box-shadow: var(--adm-shadow-lg);
+  border-color: var(--adm-border-strong);
+}
+
+.detail-card--billing {
+  border-top: 3px solid var(--adm-accent);
+}
+
+.detail-card--voucher {
+  border-top: 3px solid #7c3aed;
+}
+
+.detail-card__head {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 0.25rem;
+}
+
+.detail-card__head .adm-card__title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.detail-card__head-icon {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--adm-radius-sm);
+  background: var(--adm-accent-soft);
+  color: var(--adm-accent);
+}
+
+.detail-card__head-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.detail-card__head-icon--voucher {
+  background: rgb(124 58 237 / 12%);
+  color: #7c3aed;
+}
+
+/* Pré-visualização de preços */
+.detail-pricing {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  background: linear-gradient(
+    165deg,
+    var(--adm-surface-2) 0%,
+    rgb(248 250 252 / 98%) 100%
+  );
+  border-radius: var(--adm-radius);
+  border: 1px solid var(--adm-border);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 80%);
+  overflow: hidden;
+}
+
+.detail-pricing__badge {
+  display: inline-block;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--adm-accent);
+  background: var(--adm-accent-soft);
+  border-bottom-right-radius: var(--adm-radius-sm);
+}
+
+.detail-pricing__main {
+  padding: 1rem 1.15rem 0.75rem;
+}
+
+.detail-pricing__plan {
+  display: block;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--adm-text);
+  letter-spacing: -0.02em;
+}
+
+.detail-pricing__meta {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  color: var(--adm-text-secondary);
+  line-height: 1.45;
+}
+
+.detail-pricing__math {
+  padding: 0 1.15rem 1rem;
+  border-top: 1px dashed var(--adm-border);
+  margin-top: 0.25rem;
+  padding-top: 0.85rem;
+}
+
+.detail-pricing__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  font-size: 0.875rem;
+}
+
+.detail-pricing__row--accent {
+  padding: 0.5rem 0.65rem;
+  margin: 0.35rem -0.65rem;
+  border-radius: var(--adm-radius-sm);
+  background: rgb(37 99 235 / 6%);
+  border-left: 3px solid var(--adm-accent);
+}
+
+.detail-pricing__row--total {
+  margin-top: 0.5rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--adm-border);
+  font-weight: 600;
+}
+
+.detail-pricing__k {
+  color: var(--adm-text-secondary);
+}
+
+.detail-pricing__pct {
+  font-weight: 700;
+  color: var(--adm-accent);
+}
+
+.detail-pricing__tag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--adm-text-secondary);
+  background: var(--adm-surface);
+  border-radius: 4px;
+  border: 1px solid var(--adm-border);
+}
+
+.detail-pricing__v {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--adm-text);
+}
+
+.detail-pricing__v--muted {
+  font-weight: 500;
+  color: var(--adm-text-muted);
+}
+
+.detail-pricing__v--highlight {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--adm-text);
+}
+
+.detail-pricing__single {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem 1.1rem;
+}
+
+.detail-pricing__hint {
+  margin: 0;
+  padding: 0.65rem 1.15rem 1rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--adm-text-muted);
+  background: rgb(15 23 42 / 3%);
+  border-top: 1px solid var(--adm-border);
+}
+
+.detail-pricing__hint code {
+  font-size: 0.75rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+  background: var(--adm-surface);
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text-secondary);
+}
+
+/* Cliente Asaas */
+.detail-asaas-id {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--adm-radius-sm);
+  background: var(--adm-surface-2);
+  border: 1px solid var(--adm-border);
+}
+
+.detail-asaas-id__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--adm-text-muted);
+}
+
+.detail-asaas-id__value {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  background: var(--adm-surface);
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text);
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+}
+
+.detail-card__form {
+  margin-top: 0.25rem;
+}
+
+/* Voucher associado */
+.detail-voucher-status {
+  margin-bottom: 1.15rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--adm-radius);
+  background: linear-gradient(
+    135deg,
+    var(--adm-success-soft) 0%,
+    rgb(209 250 229 / 0.45) 100%
+  );
+  border: 1px solid rgb(5 150 105 / 22%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 60%) inset;
+}
+
+.detail-voucher-status__badge-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.detail-voucher-status__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--adm-success);
+  background: rgb(255 255 255 / 85%);
+  border-radius: 999px;
+  border: 1px solid rgb(5 150 105 / 25%);
+}
+
+.detail-voucher-status__badge--warn {
+  color: var(--adm-warning);
+  border-color: rgb(217 119 6 / 35%);
+  background: var(--adm-warning-soft);
+}
+
+.detail-voucher-status__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.detail-voucher-status__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--adm-text);
+  letter-spacing: -0.01em;
+}
+
+.detail-voucher-status__code {
+  align-self: flex-start;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--adm-radius-sm);
+  background: rgb(255 255 255 / 90%);
+  border: 1px solid rgb(5 150 105 / 18%);
+  color: #047857;
+}
+
+/* Campo código voucher */
+.detail-voucher-field {
+  margin-bottom: 1rem;
+}
+
+.detail-voucher-field__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--adm-text-secondary);
+}
+
+.detail-voucher-field__input {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.9375rem;
+  letter-spacing: 0.03em;
+}
+
+.detail-voucher-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.detail-voucher-actions .adm-btn--primary {
+  min-width: 9rem;
+}

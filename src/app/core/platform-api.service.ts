@@ -1,0 +1,347 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+export interface PlatformMe {
+  email: string;
+  platformAdmin: true;
+}
+
+export interface PlatformUserRow {
+  id: string;
+  email: string;
+  phone: string | null;
+  createdAt: string;
+  condominiumCount: number;
+  planId: number | null;
+  planName: string | null;
+}
+
+export interface PlatformUsersPage {
+  items: PlatformUserRow[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface PlatformCondominiumRow {
+  id: string;
+  name: string;
+  ownerId: string;
+  ownerEmail: string;
+  createdAt: string;
+  updatedAt: string;
+  billing: {
+    monthlyAmountCents: number;
+    currency: string;
+    status: string;
+  } | null;
+  lastCharge: {
+    referenceMonth: string;
+    status: string;
+    dueDate: string;
+  } | null;
+}
+
+export interface PlatformCondominiumsPage {
+  items: PlatformCondominiumRow[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface SaasBillingProfile {
+  condominiumId: string;
+  monthlyAmountCents: number;
+  currency: string;
+  asaasCustomerId: string | null;
+  status: string;
+  notes: string | null;
+  updatedAt: string;
+}
+
+export interface SaasChargeRow {
+  id: string;
+  condominiumId: string;
+  referenceMonth: string;
+  amountCents: number;
+  dueDate: string;
+  status: string;
+  asaasPaymentId: string | null;
+  invoiceUrl: string | null;
+  bankSlipUrl: string | null;
+  pixQrPayload: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DashboardSummary {
+  condominiumTotal: number;
+  pendingChargesThisMonth: number;
+  referenceMonth: string;
+}
+
+export interface SaasPlanPriceTier {
+  minUnits: number;
+  maxUnits: number | null;
+  pricePerUnitCents: number;
+}
+
+export interface SaasPlanRow {
+  id: number;
+  name: string;
+  pricePerUnitCents: number;
+  unitPriceTiers?: SaasPlanPriceTier[] | null;
+  currency: string;
+  isDefault: boolean;
+  active: boolean;
+  catalogBlurb?: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CondominiumPlanPricing {
+  condominiumId: string;
+  unitCount: number;
+  planId: number;
+  planName: string;
+  pricePerUnitCents: number;
+  monthlyCents: number;
+  currency: string;
+  baseMonthlyCents?: number;
+  discountPercent?: number;
+  appliedVoucherIds?: string[];
+  appliedLabels?: string[];
+  referenceMonth?: string;
+}
+
+/** Catálogo de vouchers (nome + código único). */
+export interface SaasVoucherRow {
+  id: string;
+  name: string;
+  code: string;
+  discountPercent: number;
+  validFrom: string;
+  validTo: string;
+  notes: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SaasVoucherSaved {
+  id: string;
+  name: string;
+  code: string;
+  discountPercent: number;
+  validFrom: string;
+  validTo: string;
+  notes: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CondominiumVoucherAssignment {
+  voucher: {
+    id: string;
+    name: string;
+    code: string;
+    discountPercent: number;
+    validFrom: string;
+    validTo: string;
+    active: boolean;
+  } | null;
+}
+
+export interface BulkChargeResultRow {
+  condominiumId: string;
+  ok: boolean;
+  reused?: boolean;
+  error?: string;
+  charge?: SaasChargeRow;
+}
+
+@Injectable({ providedIn: 'root' })
+export class PlatformApiService {
+  private readonly http = inject(HttpClient);
+  private readonly base = `${environment.apiUrl}/platform`;
+
+  me(): Observable<PlatformMe> {
+    return this.http.get<PlatformMe>(`${this.base}/me`);
+  }
+
+  users(page = 1, limit = 20): Observable<PlatformUsersPage> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+    return this.http.get<PlatformUsersPage>(`${this.base}/users`, { params });
+  }
+
+  condominiums(page = 1, limit = 20): Observable<PlatformCondominiumsPage> {
+    const params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+    return this.http.get<PlatformCondominiumsPage>(`${this.base}/condominiums`, {
+      params,
+    });
+  }
+
+  dashboardSummary(): Observable<DashboardSummary> {
+    return this.http.get<DashboardSummary>(`${this.base}/dashboard/summary`);
+  }
+
+  getBilling(condominiumId: string): Observable<SaasBillingProfile | null> {
+    return this.http.get<SaasBillingProfile | null>(
+      `${this.base}/condominiums/${condominiumId}/billing`,
+    );
+  }
+
+  patchBilling(
+    condominiumId: string,
+    body: Partial<{
+      monthlyAmountCents: number;
+      currency: string;
+      status: string;
+      notes: string | null;
+    }>,
+  ): Observable<SaasBillingProfile> {
+    return this.http.patch<SaasBillingProfile>(
+      `${this.base}/condominiums/${condominiumId}/billing`,
+      body,
+    );
+  }
+
+  charges(condominiumId: string): Observable<SaasChargeRow[]> {
+    return this.http.get<SaasChargeRow[]>(
+      `${this.base}/condominiums/${condominiumId}/billing/charges`,
+    );
+  }
+
+  createCharge(
+    condominiumId: string,
+    body: { referenceMonth: string; dueDate?: string },
+  ): Observable<{ reused: boolean; charge: SaasChargeRow }> {
+    return this.http.post<{ reused: boolean; charge: SaasChargeRow }>(
+      `${this.base}/condominiums/${condominiumId}/billing/charges`,
+      body,
+    );
+  }
+
+  plans(): Observable<SaasPlanRow[]> {
+    return this.http.get<SaasPlanRow[]>(`${this.base}/plans`);
+  }
+
+  createPlan(body: {
+    name: string;
+    pricePerUnitCents: number;
+    unitPriceTiers?: SaasPlanPriceTier[] | null;
+    currency?: string;
+    active?: boolean;
+    notes?: string | null;
+    catalogBlurb?: string | null;
+  }): Observable<SaasPlanRow> {
+    return this.http.post<SaasPlanRow>(`${this.base}/plans`, body);
+  }
+
+  patchPlan(
+    planId: number,
+    body: Partial<{
+      name: string;
+      pricePerUnitCents: number;
+      unitPriceTiers: SaasPlanPriceTier[] | null;
+      currency: string;
+      active: boolean;
+      notes: string | null;
+      catalogBlurb: string | null;
+    }>,
+  ): Observable<SaasPlanRow> {
+    return this.http.patch<SaasPlanRow>(`${this.base}/plans/${planId}`, body);
+  }
+
+  setDefaultPlan(planId: number): Observable<SaasPlanRow> {
+    return this.http.post<SaasPlanRow>(
+      `${this.base}/plans/${planId}/set-default`,
+      {},
+    );
+  }
+
+  condominiumPlanPricing(
+    condominiumId: string,
+    referenceMonth?: string,
+  ): Observable<CondominiumPlanPricing> {
+    let params = new HttpParams();
+    if (referenceMonth?.trim()) {
+      params = params.set('referenceMonth', referenceMonth.trim());
+    }
+    return this.http.get<CondominiumPlanPricing>(
+      `${this.base}/condominiums/${condominiumId}/plan-pricing`,
+      { params },
+    );
+  }
+
+  vouchers(): Observable<SaasVoucherRow[]> {
+    return this.http.get<SaasVoucherRow[]>(`${this.base}/vouchers`);
+  }
+
+  createVoucher(body: {
+    name: string;
+    code: string;
+    discountPercent: number;
+    validFrom: string;
+    validTo: string;
+    notes?: string | null;
+    active?: boolean;
+  }): Observable<SaasVoucherSaved> {
+    return this.http.post<SaasVoucherSaved>(`${this.base}/vouchers`, body);
+  }
+
+  patchVoucher(
+    voucherId: string,
+    body: Partial<{
+      name: string;
+      code: string;
+      discountPercent: number;
+      validFrom: string;
+      validTo: string;
+      notes: string | null;
+      active: boolean;
+    }>,
+  ): Observable<SaasVoucherSaved> {
+    return this.http.patch<SaasVoucherSaved>(
+      `${this.base}/vouchers/${voucherId}`,
+      body,
+    );
+  }
+
+  getCondominiumVoucher(
+    condominiumId: string,
+  ): Observable<CondominiumVoucherAssignment> {
+    return this.http.get<CondominiumVoucherAssignment>(
+      `${this.base}/condominiums/${condominiumId}/voucher`,
+    );
+  }
+
+  patchCondominiumVoucher(
+    condominiumId: string,
+    body: { code: string | null },
+  ): Observable<CondominiumVoucherAssignment> {
+    return this.http.patch<CondominiumVoucherAssignment>(
+      `${this.base}/condominiums/${condominiumId}/voucher`,
+      body,
+    );
+  }
+
+  bulkCreateCharges(body: {
+    referenceMonth: string;
+    dueDate?: string;
+  }): Observable<{ results: BulkChargeResultRow[] }> {
+    return this.http.post<{ results: BulkChargeResultRow[] }>(
+      `${this.base}/billing/charges/bulk`,
+      body,
+    );
+  }
+}

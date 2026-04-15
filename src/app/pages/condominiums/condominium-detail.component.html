@@ -1,0 +1,314 @@
+<div class="adm-page detail">
+  <a class="detail__back adm-link" routerLink="/app/condominios"
+    >← Voltar aos condomínios</a
+  >
+
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Faturação do condomínio</h1>
+    <p class="adm-page__lead">
+      A mensalidade é o <strong>plano do titular</strong> ×
+      <strong>número de unidades</strong>, com eventuais
+      <strong>vouchers</strong> pelo mês de referência. Gere cobranças na Asaas
+      (ou registo bonificado se o valor for zero).
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  } @else if (!billingLoaded()) {
+    <p class="adm-loading">A carregar…</p>
+  } @else {
+    <div class="detail__grid">
+      <section class="adm-card detail-card detail-card--billing">
+        <div class="adm-card__header detail-card__head">
+          <div class="detail-card__head-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="8" y1="13" x2="16" y2="13" />
+              <line x1="8" y1="17" x2="16" y2="17" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="adm-card__title">Perfil de faturação</h2>
+            <p class="adm-card__desc">
+              Estado do contrato SaaS e notas internas. O valor da cobrança vem do
+              plano × unidades (ver pré-visualização).
+            </p>
+          </div>
+        </div>
+        <div class="adm-card__body">
+          @if (planPricing(); as pr) {
+            <div class="detail-pricing">
+              <div class="detail-pricing__badge">Pré-visualização</div>
+              <div class="detail-pricing__main">
+                <span class="detail-pricing__plan">{{ pr.planName }}</span>
+                <span class="detail-pricing__meta"
+                  >Plano #{{ pr.planId }} · {{ pr.unitCount }} unidade(s) ×
+                  {{ formatCents(pr.pricePerUnitCents) }}</span
+                >
+              </div>
+              @if (pr.baseMonthlyCents != null && (pr.discountPercent ?? 0) > 0) {
+                <div class="detail-pricing__math">
+                  <div class="detail-pricing__row">
+                    <span class="detail-pricing__k">Base mensal</span>
+                    <span class="detail-pricing__v">{{ formatCents(pr.baseMonthlyCents) }}</span>
+                  </div>
+                  <div class="detail-pricing__row detail-pricing__row--accent">
+                    <span class="detail-pricing__k"
+                      >Desconto
+                      <span class="detail-pricing__pct">{{ pr.discountPercent }}%</span>
+                      @if (pr.appliedLabels && pr.appliedLabels.length > 0) {
+                        <span class="detail-pricing__tag">{{
+                          pr.appliedLabels.join(', ')
+                        }}</span>
+                      }
+                    </span>
+                    <span class="detail-pricing__v detail-pricing__v--muted">—</span>
+                  </div>
+                  <div class="detail-pricing__row detail-pricing__row--total">
+                    <span class="detail-pricing__k">Total após desconto</span>
+                    <span class="detail-pricing__v detail-pricing__v--highlight">{{
+                      formatCents(pr.monthlyCents)
+                    }}</span>
+                  </div>
+                </div>
+              } @else {
+                <div class="detail-pricing__single">
+                  <span class="detail-pricing__k">Mensalidade</span>
+                  <span class="detail-pricing__v detail-pricing__v--highlight">{{
+                    formatCents(pr.monthlyCents)
+                  }}</span>
+                </div>
+              }
+              @if (pr.referenceMonth) {
+                <p class="detail-pricing__hint">
+                  Mês de referência <code>{{ pr.referenceMonth }}</code> — altere em «Gerar cobrança»
+                  e saia do campo para actualizar.
+                </p>
+              }
+            </div>
+          }
+          @if (saveMsg()) {
+            <div class="adm-alert adm-alert--success">{{ saveMsg() }}</div>
+          }
+          <form class="adm-form-grid detail-card__form" (ngSubmit)="saveBilling()">
+            <div class="adm-field">
+              <span>Estado</span>
+              <select class="adm-select" name="status" [(ngModel)]="status">
+                <option value="active">Ativo</option>
+                <option value="suspended">Suspenso</option>
+              </select>
+            </div>
+            <div class="adm-field detail__field-full">
+              <span>Notas</span>
+              <textarea
+                class="adm-textarea"
+                name="notes"
+                rows="3"
+                [(ngModel)]="notes"
+              ></textarea>
+            </div>
+            @if (billing(); as b) {
+              @if (b.asaasCustomerId) {
+                <div class="detail-asaas-id detail__field-full">
+                  <span class="detail-asaas-id__label">Cliente Asaas</span>
+                  <code class="detail-asaas-id__value">{{ b.asaasCustomerId }}</code>
+                </div>
+              }
+            }
+            <div class="adm-form-actions detail__field-full">
+              <button class="adm-btn adm-btn--primary" type="submit">
+                Guardar perfil
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="adm-card detail-card detail-card--voucher">
+        <div class="adm-card__header detail-card__head">
+          <div class="detail-card__head-icon detail-card__head-icon--voucher" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M20 12v10H4V12" />
+              <path d="M22 7H2v5h20V7z" />
+              <path d="M12 22V7" />
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="adm-card__title">Voucher do catálogo</h2>
+            <p class="adm-card__desc">
+              Introduza o <strong>código</strong> definido em Plataforma → Vouchers.
+              Só vouchers <strong>activos</strong> são aceites. O desconto na
+              pré-visualização depende do mês de referência e do período do voucher.
+            </p>
+          </div>
+        </div>
+        <div class="adm-card__body">
+          @if (voucherMsg()) {
+            <div class="adm-alert adm-alert--info">{{ voucherMsg() }}</div>
+          }
+          @if (condoVoucher()?.voucher; as cv) {
+            <div class="detail-voucher-status">
+              <div class="detail-voucher-status__badge-wrap">
+                <span class="detail-voucher-status__badge">Associado</span>
+                @if (!cv.active) {
+                  <span class="detail-voucher-status__badge detail-voucher-status__badge--warn"
+                    >Inactivo</span
+                  >
+                }
+              </div>
+              <div class="detail-voucher-status__body">
+                <span class="detail-voucher-status__name">{{ cv.name }}</span>
+                <span class="detail-voucher-status__code">{{ cv.code }}</span>
+              </div>
+            </div>
+          }
+          <div class="detail-voucher-field">
+            <label class="detail-voucher-field__label" for="voucherCodeInput">Código do voucher</label>
+            <input
+              id="voucherCodeInput"
+              class="adm-input detail-voucher-field__input"
+              type="text"
+              name="voucherCode"
+              spellcheck="false"
+              autocomplete="off"
+              [(ngModel)]="voucherCodeInput"
+              placeholder="Ex. PROMO2026"
+            />
+          </div>
+          <div class="detail-voucher-actions">
+            <button
+              type="button"
+              class="adm-btn adm-btn--primary"
+              (click)="applyVoucherCode()"
+            >
+              Aplicar código
+            </button>
+            @if (condoVoucher()?.voucher) {
+              <button
+                type="button"
+                class="adm-btn adm-btn--ghost"
+                (click)="removeVoucherFromCondominium()"
+              >
+                Remover voucher
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="adm-card">
+        <div class="adm-card__header">
+          <h2 class="adm-card__title">Gerar cobrança</h2>
+          <p class="adm-card__desc">
+            Cria um pagamento na Asaas (tipo indefinido: boleto ou PIX no fluxo do
+            pagador).
+          </p>
+        </div>
+        <div class="adm-card__body">
+          @if (chargeMsg()) {
+            <div class="adm-alert adm-alert--info">{{ chargeMsg() }}</div>
+          }
+          <div class="adm-form-grid adm-form-grid--2">
+            <div class="adm-field">
+              <span>Mês (YYYY-MM)</span>
+              <input
+                class="adm-input"
+                type="text"
+                name="refMonth"
+                [(ngModel)]="referenceMonth"
+                (blur)="reloadPlanPricing()"
+                pattern="[0-9]{4}-[0-9]{2}"
+              />
+            </div>
+            <div class="adm-field">
+              <span>Vencimento (opcional)</span>
+              <input
+                class="adm-input"
+                type="date"
+                name="due"
+                [(ngModel)]="dueDate"
+              />
+            </div>
+          </div>
+          <div class="adm-form-actions">
+            <button
+              type="button"
+              class="adm-btn adm-btn--secondary"
+              (click)="generateCharge()"
+            >
+              Gerar cobrança
+            </button>
+          </div>
+          <p class="detail__hint">
+            Com valor zero (voucher 100%), não é necessário CPF nem Asaas. Para
+            valores &gt; 0, o titular precisa de CPF e
+            <code>ASAAS_API_KEY</code> na API.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <section class="adm-card detail__charges">
+      <div class="adm-card__header">
+        <h2 class="adm-card__title">Cobranças</h2>
+        <p class="adm-card__desc">Histórico por mês de referência.</p>
+      </div>
+      <div class="adm-card__body adm-card__body--flush">
+        <div class="adm-table-scroll">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th>Valor</th>
+                <th>Vencimento</th>
+                <th>Estado</th>
+                <th>Links</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ch of charges(); track ch.id) {
+                <tr>
+                  <td class="cell-strong">{{ ch.referenceMonth }}</td>
+                  <td>{{ formatCents(ch.amountCents) }}</td>
+                  <td class="cell-muted">{{ ch.dueDate }}</td>
+                  <td>
+                    <span [class]="chargeStatusBadgeClass(ch.status)">{{
+                      chargeStatusLabel(ch.status)
+                    }}</span>
+                  </td>
+                  <td class="detail__links">
+                    @if (ch.invoiceUrl) {
+                      <a
+                        class="adm-link"
+                        [href]="ch.invoiceUrl"
+                        target="_blank"
+                        rel="noopener"
+                        >Fatura</a
+                      >
+                    }
+                    @if (ch.bankSlipUrl) {
+                      <a
+                        class="adm-link"
+                        [href]="ch.bankSlipUrl"
+                        target="_blank"
+                        rel="noopener"
+                        >Boleto</a
+                      >
+                    }
+                    @if (!ch.invoiceUrl && !ch.bankSlipUrl) {
+                      <span class="cell-muted">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+</div>

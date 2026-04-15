@@ -1,0 +1,68 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Clientes</h1>
+    <p class="adm-page__lead">
+      Contas de utilizador e número de condomínios em que são titulares.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  } @else {
+    <div class="adm-table-shell">
+      <div class="adm-table-scroll">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Plano</th>
+              <th>Condomínios</th>
+              <th>Registo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of items(); track u.id) {
+              <tr>
+                <td class="cell-strong">{{ u.email }}</td>
+                <td>{{ u.phone ?? '—' }}</td>
+                <td>
+                  @if (u.planName) {
+                    <span class="cell-strong">{{ u.planName }}</span>
+                    <span class="cell-muted"> (#{{ u.planId }})</span>
+                  } @else {
+                    <span class="cell-muted">—</span>
+                  }
+                </td>
+                <td>{{ u.condominiumCount }}</td>
+                <td class="cell-muted">{{ u.createdAt | date: 'short' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="adm-pager">
+      <span class="adm-pager__meta">
+        Página {{ page() }} de {{ totalPages() }} · {{ total() }} contas
+      </span>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() <= 1"
+        (click)="prev()"
+      >
+        Anterior
+      </button>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() * limit >= total()"
+        (click)="next()"
+      >
+        Seguinte
+      </button>
+    </div>
+  }
+</div>

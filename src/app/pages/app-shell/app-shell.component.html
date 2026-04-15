@@ -1,0 +1,71 @@
+<div class="shell">
+  <aside class="sidebar" aria-label="Navegação principal">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo" aria-hidden="true">C</div>
+      <div class="sidebar__titles">
+        <span class="sidebar__name">Condo</span>
+        <span class="sidebar__tag">Plataforma</span>
+      </div>
+    </div>
+
+    <p class="sidebar__section-label">Menu</p>
+    <nav class="sidebar__nav">
+      <a routerLink="/app/dashboard" routerLinkActive="active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>Painel</span>
+      </a>
+      <a routerLink="/app/planos" routerLinkActive="active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+        <span>Planos</span>
+      </a>
+      <a routerLink="/app/vouchers" routerLinkActive="active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 12v10H4V12" />
+          <path d="M22 7H2v5h20V7z" />
+          <path d="M12 22V7" />
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+        </svg>
+        <span>Vouchers</span>
+      </a>
+      <a routerLink="/app/clientes" routerLinkActive="active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        <span>Clientes</span>
+      </a>
+      <a routerLink="/app/condominios" routerLinkActive="active" class="sidebar__link">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+          <path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01" />
+        </svg>
+        <span>Condomínios</span>
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <button type="button" class="sidebar__logout" (click)="logout()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Terminar sessão
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

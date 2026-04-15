@@ -1,0 +1,182 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Vouchers</h1>
+    <p class="adm-page__lead">
+      Defina um <strong>nome</strong> e um <strong>código</strong> único (ex.
+      <code>PROMO2026</code>). No cadastro de cada
+      <strong>condomínio</strong>, introduza esse código para aplicar o desconto
+      sobre a mensalidade SaaS. O desconto só vale nos meses
+      <code>YYYY-MM</code> que intersectam o período de validade do voucher.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  }
+
+  @if (msg()) {
+    <div class="adm-alert adm-alert--info">{{ msg() }}</div>
+  }
+
+  <section class="adm-card vouchers-new">
+    <div class="adm-card__header">
+      <h2 class="adm-card__title">Novo voucher (catálogo)</h2>
+    </div>
+    <div class="adm-card__body vouchers-new__body">
+      <div class="adm-field">
+        <span>Nome</span>
+        <input class="adm-input" type="text" [(ngModel)]="newName" />
+      </div>
+      <div class="adm-field">
+        <span>Código</span>
+        <input
+          class="adm-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          [(ngModel)]="newCode"
+        />
+      </div>
+      <div class="adm-field">
+        <span>Desconto (%)</span>
+        <input
+          class="adm-input"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          [(ngModel)]="newDiscountPercent"
+        />
+      </div>
+      <div class="adm-field">
+        <span>Válido de</span>
+        <input class="adm-input" type="date" [(ngModel)]="newValidFrom" />
+      </div>
+      <div class="adm-field">
+        <span>Válido até</span>
+        <input class="adm-input" type="date" [(ngModel)]="newValidTo" />
+      </div>
+      <div class="adm-field">
+        <span>Notas (opcional)</span>
+        <input class="adm-input" type="text" [(ngModel)]="newNotes" />
+      </div>
+      <button type="button" class="adm-btn adm-btn--primary" (click)="create()">
+        Criar no catálogo
+      </button>
+    </div>
+  </section>
+
+  <div class="adm-table-shell">
+    <div class="adm-table-scroll">
+      <table class="adm-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Código</th>
+            <th>%</th>
+            <th>Período</th>
+            <th>Activo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of vouchers(); track v.id) {
+            <tr>
+              <td>
+                @if (editingId === v.id) {
+                  <input class="adm-input" type="text" [(ngModel)]="editName" />
+                } @else {
+                  <span class="cell-strong">{{ v.name }}</span>
+                }
+              </td>
+              <td>
+                @if (editingId === v.id) {
+                  <input
+                    class="adm-input"
+                    type="text"
+                    spellcheck="false"
+                    [(ngModel)]="editCode"
+                  />
+                } @else {
+                  <code>{{ v.code }}</code>
+                }
+              </td>
+              <td>
+                @if (editingId === v.id) {
+                  <input
+                    class="adm-input adm-input--narrow"
+                    type="number"
+                    min="0"
+                    max="100"
+                    [(ngModel)]="editDiscount"
+                  />
+                } @else {
+                  {{ v.discountPercent }}%
+                }
+              </td>
+              <td>
+                @if (editingId === v.id) {
+                  <div class="vouchers-dates">
+                    <input class="adm-input" type="date" [(ngModel)]="editValidFrom" />
+                    <span class="cell-muted">→</span>
+                    <input class="adm-input" type="date" [(ngModel)]="editValidTo" />
+                  </div>
+                } @else {
+                  {{ v.validFrom }} — {{ v.validTo }}
+                }
+              </td>
+              <td>
+                @if (editingId === v.id) {
+                  <label class="chk"
+                    ><input type="checkbox" [(ngModel)]="editActive" /> Activo</label
+                  >
+                } @else {
+                  <span
+                    class="adm-badge"
+                    [class.adm-badge--success]="v.active"
+                    [class.adm-badge--neutral]="!v.active"
+                    >{{ v.active ? 'Sim' : 'Não' }}</span
+                  >
+                }
+              </td>
+              <td class="vouchers-actions">
+                @if (editingId === v.id) {
+                  <textarea
+                    class="adm-textarea vouchers-notes"
+                    rows="2"
+                    placeholder="Notas internas"
+                    [(ngModel)]="editNotes"
+                  ></textarea>
+                  <div class="vouchers-actions__btns">
+                    <button
+                      type="button"
+                      class="adm-btn adm-btn--primary"
+                      (click)="saveEdit(v.id)"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      type="button"
+                      class="adm-btn adm-btn--secondary"
+                      (click)="cancelEdit()"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                } @else {
+                  <button
+                    type="button"
+                    class="adm-btn adm-btn--ghost"
+                    (click)="startEdit(v)"
+                  >
+                    Editar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

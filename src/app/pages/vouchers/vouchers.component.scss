@@ -1,0 +1,52 @@
+.vouchers-new__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.vouchers-new__body .adm-field {
+  min-width: 160px;
+}
+
+.vouchers-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.vouchers-actions {
+  min-width: 200px;
+  vertical-align: top;
+}
+
+.vouchers-actions__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.vouchers-notes {
+  width: 100%;
+  min-width: 180px;
+  margin-top: 0.25rem;
+}
+
+.cell-small {
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+.chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--adm-text-secondary);
+}
+
+.adm-input--narrow {
+  max-width: 5rem;
+}

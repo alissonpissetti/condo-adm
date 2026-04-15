@@ -1,0 +1,27 @@
+.dash-bulk {
+  margin-top: 1.5rem;
+}
+
+.dash-bulk__row {
+  margin-bottom: 1rem;
+}
+
+.dash-bulk__msg {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: var(--adm-text-secondary);
+}
+
+.dash-bulk__table-wrap {
+  margin-top: 1rem;
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-sm);
+}
+
+.dash-bulk__err {
+  font-size: 0.8125rem;
+  color: var(--adm-danger);
+  margin-top: 0.25rem;
+}

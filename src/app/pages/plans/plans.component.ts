@@ -120,13 +120,14 @@ export class PlansComponent {
 
   private addTierLine(lines: TierLine[]): void {
     const prev = lines[lines.length - 1];
-    if (prev.maxUnits.trim() === '') {
+    const prevMaxRaw = String(prev.maxUnits ?? '').trim();
+    if (prevMaxRaw === '') {
       this.msg.set(
         'Preencha "Até" da faixa actual antes de adicionar outra; a última faixa fica sem limite superior.',
       );
       return;
     }
-    const prevMax = parseInt(prev.maxUnits, 10);
+    const prevMax = parseInt(prevMaxRaw, 10);
     if (!Number.isFinite(prevMax)) {
       this.msg.set('Máximo da faixa actual inválido.');
       return;
@@ -293,7 +294,7 @@ export class PlansComponent {
       if (isLast) {
         maxU = null;
       } else {
-        const raw = rows[i].maxUnits.trim();
+        const raw = String(rows[i].maxUnits ?? '').trim();
         maxU = parseInt(raw, 10);
         if (!Number.isFinite(maxU) || maxU < minU) {
           return `Faixa ${i + 1}: máximo inválido (≥ mínimo).`;
@@ -310,7 +311,7 @@ export class PlansComponent {
       });
     }
     const lastRow = rows[rows.length - 1];
-    if (!lastRow || lastRow.maxUnits.trim() !== '') {
+    if (!lastRow || String(lastRow.maxUnits ?? '').trim() !== '') {
       return 'A última faixa deve deixar "Até" vazio (sem limite superior).';
     }
     return tiers;

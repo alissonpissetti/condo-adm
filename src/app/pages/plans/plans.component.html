@@ -48,8 +48,10 @@
       } @else {
         <div class="tiers-editor">
           <p class="tiers-hint">
-            Primeira faixa com mínimo <strong>1</strong>. Preencha os máximos; na
-            <strong>última</strong> linha deixe <strong>Até</strong> vazio (= sem limite).
+            Primeira faixa com mínimo <strong>1</strong>. Para <strong>+ Adicionar faixa</strong>,
+            preencha <strong>Até</strong> na linha que está por último (fecha essa faixa). A
+            <strong>última</strong> linha da lista fica sempre com <strong>Até</strong> vazio
+            (= sem limite superior).
           </p>
           <div class="tiers-grid tiers-grid--head">
             <span>De (unid.)</span>
@@ -72,8 +74,7 @@
                 min="1"
                 [(ngModel)]="line.maxUnits"
                 [name]="'nx' + i"
-                [readonly]="i === newTierLines.length - 1"
-                [attr.placeholder]="i === newTierLines.length - 1 ? 'vazio' : ''"
+                [attr.placeholder]="i === newTierLines.length - 1 ? 'vazio = ∞' : ''"
               />
               <input
                 class="adm-input"
@@ -231,8 +232,9 @@
                     @if (editUseTiers) {
                       <div class="tiers-editor">
                         <p class="tiers-hint">
-                          Na última linha deixe <strong>Até</strong> vazio. As faixas devem
-                          ser contíguas (a API valida).
+                          Para <strong>+ Adicionar faixa</strong>, preencha <strong>Até</strong> na
+                          linha actualmente última. No fim, a <strong>última</strong> linha deve
+                          deixar <strong>Até</strong> vazio. Faixas contíguas (validado na API).
                         </p>
                         <div class="tiers-grid tiers-grid--head">
                           <span>De (unid.)</span>
@@ -255,9 +257,8 @@
                               min="1"
                               [(ngModel)]="line.maxUnits"
                               [name]="'ex' + i"
-                              [readonly]="i === editTierLines.length - 1"
                               [attr.placeholder]="
-                                i === editTierLines.length - 1 ? 'vazio' : ''
+                                i === editTierLines.length - 1 ? 'vazio = ∞' : ''
                               "
                             />
                             <input

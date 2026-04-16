@@ -269,6 +269,10 @@ export class PlatformApiService {
     );
   }
 
+  deletePlan(planId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/plans/${planId}`);
+  }
+
   condominiumPlanPricing(
     condominiumId: string,
     referenceMonth?: string,

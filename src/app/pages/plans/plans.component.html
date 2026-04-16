@@ -180,11 +180,28 @@
                   >
                     Editar
                   </button>
+                  <button
+                    type="button"
+                    class="adm-btn adm-btn--ghost"
+                    (click)="duplicate(p)"
+                    [disabled]="duplicatingId() !== null || removingId() !== null"
+                  >
+                    {{ duplicatingId() === p.id ? 'A duplicar…' : 'Duplicar' }}
+                  </button>
                   @if (!p.isDefault) {
                     <button
                       type="button"
                       class="adm-btn adm-btn--secondary"
+                      (click)="remove(p)"
+                      [disabled]="duplicatingId() !== null || removingId() !== null"
+                    >
+                      {{ removingId() === p.id ? 'A remover…' : 'Remover' }}
+                    </button>
+                    <button
+                      type="button"
+                      class="adm-btn adm-btn--secondary"
                       (click)="setDefault(p.id)"
+                      [disabled]="removingId() !== null"
                     >
                       Tornar padrão
                     </button>

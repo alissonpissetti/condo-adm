@@ -26,6 +26,8 @@ export class PlansComponent {
   protected readonly plans = signal<SaasPlanRow[]>([]);
   protected readonly error = signal<string | null>(null);
   protected readonly msg = signal<string | null>(null);
+  protected readonly duplicatingId = signal<number | null>(null);
+  protected readonly removingId = signal<number | null>(null);
 
   protected newName = '';
   protected newPriceReais = 0;
@@ -265,6 +267,34 @@ export class PlansComponent {
     });
   }
 
+  remove(p: SaasPlanRow): void {
+    if (p.isDefault) {
+      return;
+    }
+    const ok = window.confirm(
+      `Remover definitivamente o plano «${p.name}»? Só é permitido se não estiver em uso (condomínios, histórico SaaS, titulares ou pedidos de mudança).`,
+    );
+    if (!ok) {
+      return;
+    }
+    this.msg.set(null);
+    this.removingId.set(p.id);
+    this.api.deletePlan(p.id).subscribe({
+      next: () => {
+        this.removingId.set(null);
+        if (this.editingId === p.id) {
+          this.editingId = null;
+        }
+        this.msg.set('Plano removido.');
+        this.refresh();
+      },
+      error: (e) => {
+        this.removingId.set(null);
+        this.msg.set(this.httpErr(e, 'Erro ao remover plano.'));
+      },
+    });
+  }
+
   setDefault(id: number): void {
     this.msg.set(null);
     this.api.setDefaultPlan(id).subscribe({
@@ -275,6 +305,48 @@ export class PlansComponent {
       error: (e) =>
         this.msg.set(this.httpErr(e, 'Erro ao definir plano padrão.')),
     });
+  }
+
+  /** Cria um plano novo com os mesmos dados; fica inactivo até activar na edição. */
+  duplicate(p: SaasPlanRow): void {
+    this.msg.set(null);
+    const base = p.name.trim();
+    let name = `${base} (cópia)`;
+    if (name.length > 128) {
+      name = `${base.slice(0, 118).trimEnd()} (cópia)`.slice(0, 128);
+    }
+    const tiers =
+      p.unitPriceTiers?.length && p.unitPriceTiers.length > 0
+        ? p.unitPriceTiers.map((t) => ({
+            minUnits: t.minUnits,
+            maxUnits: t.maxUnits,
+            pricePerUnitCents: t.pricePerUnitCents,
+          }))
+        : undefined;
+    this.duplicatingId.set(p.id);
+    this.api
+      .createPlan({
+        name,
+        pricePerUnitCents: p.pricePerUnitCents,
+        unitPriceTiers: tiers,
+        currency: p.currency,
+        active: false,
+        catalogBlurb: p.catalogBlurb ?? null,
+        notes: p.notes ?? null,
+      })
+      .subscribe({
+        next: () => {
+          this.duplicatingId.set(null);
+          this.msg.set(
+            'Plano duplicado. A cópia fica inactiva — active em «Editar» se quiser publicar.',
+          );
+          this.refresh();
+        },
+        error: (e) => {
+          this.duplicatingId.set(null);
+          this.msg.set(this.httpErr(e, 'Erro ao duplicar plano.'));
+        },
+      });
   }
 
   private buildTiersFromLines(

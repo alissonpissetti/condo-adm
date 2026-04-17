@@ -3,6 +3,10 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   PlatformApiService,
+  SAAS_PLAN_FEATURE_KEYS,
+  SAAS_PLAN_FEATURE_LABELS,
+  type SaasPlanFeatureKey,
+  type SaasPlanFeatures,
   type SaasPlanPriceTier,
   type SaasPlanRow,
 } from '../../core/platform-api.service';
@@ -44,8 +48,20 @@ export class PlansComponent {
   protected editUseTiers = false;
   protected editTierLines: TierLine[] = PlansComponent.defaultTierLinesFromCents(0);
 
+  protected readonly featureKeys = SAAS_PLAN_FEATURE_KEYS;
+  protected readonly featureLabels = SAAS_PLAN_FEATURE_LABELS;
+  protected editFeatures: SaasPlanFeatures = PlansComponent.allFeaturesEnabled();
+
   constructor() {
     this.refresh();
+  }
+
+  private static allFeaturesEnabled(): SaasPlanFeatures {
+    const out = {} as SaasPlanFeatures;
+    for (const k of SAAS_PLAN_FEATURE_KEYS) {
+      out[k] = true;
+    }
+    return out;
   }
 
   private static defaultTierLinesFromCents(cents: number): TierLine[] {
@@ -224,6 +240,21 @@ export class PlansComponent {
         p.pricePerUnitCents,
       );
     }
+    const feats = PlansComponent.allFeaturesEnabled();
+    if (p.features) {
+      for (const k of SAAS_PLAN_FEATURE_KEYS) {
+        const v = p.features[k];
+        if (typeof v === 'boolean') {
+          feats[k] = v;
+        }
+      }
+    }
+    this.editFeatures = feats;
+  }
+
+  protected toggleEditFeature(key: SaasPlanFeatureKey, ev: Event): void {
+    const checked = (ev.target as HTMLInputElement).checked;
+    this.editFeatures = { ...this.editFeatures, [key]: checked };
   }
 
   cancelEdit(): void {
@@ -257,13 +288,15 @@ export class PlansComponent {
       body.pricePerUnitCents = pricePerUnitCents;
     }
 
+    body.features = { ...this.editFeatures };
+
     this.api.patchPlan(id, body).subscribe({
       next: () => {
         this.editingId = null;
-        this.msg.set('Plano actualizado.');
+        this.msg.set('Plano atualizado.');
         this.refresh();
       },
-      error: (e) => this.msg.set(this.httpErr(e, 'Erro ao guardar.')),
+      error: (e) => this.msg.set(this.httpErr(e, 'Erro ao salvar.')),
     });
   }
 
@@ -299,7 +332,7 @@ export class PlansComponent {
     this.msg.set(null);
     this.api.setDefaultPlan(id).subscribe({
       next: () => {
-        this.msg.set('Plano padrão actualizado (novos registos).');
+        this.msg.set('Plano padrão atualizado (novos cadastros).');
         this.refresh();
       },
       error: (e) =>
@@ -307,7 +340,7 @@ export class PlansComponent {
     });
   }
 
-  /** Cria um plano novo com os mesmos dados; fica inactivo até activar na edição. */
+  /** Cria um plano novo com os mesmos dados; fica inativo até ativar na edição. */
   duplicate(p: SaasPlanRow): void {
     this.msg.set(null);
     const base = p.name.trim();
@@ -338,7 +371,7 @@ export class PlansComponent {
         next: () => {
           this.duplicatingId.set(null);
           this.msg.set(
-            'Plano duplicado. A cópia fica inactiva — active em «Editar» se quiser publicar.',
+            'Plano duplicado. A cópia fica inativa — ative em «Editar» se quiser publicar.',
           );
           this.refresh();
         },

@@ -66,7 +66,7 @@ export class CondominiumDetailComponent {
       },
       error: () => {
         this.billingLoaded.set(true);
-        this.error.set('Não foi possível carregar a faturação.');
+        this.error.set('Não foi possível carregar o faturamento.');
       },
     });
     this.api.charges(id).subscribe({
@@ -86,7 +86,7 @@ export class CondominiumDetailComponent {
     this.loadPlanPricing(id);
   }
 
-  /** Actualiza só a pré-visualização (plano × unidades × vouchers do mês). */
+  /** Atualiza só a pré-visualização (plano × unidades × vouchers do mês). */
   reloadPlanPricing(): void {
     const id = this.condoId();
     if (!id) {
@@ -118,10 +118,10 @@ export class CondominiumDetailComponent {
       .subscribe({
         next: (b) => {
           this.billing.set(b);
-          this.saveMsg.set('Guardado.');
+          this.saveMsg.set('Salvo.');
         },
         error: (err: { error?: { message?: string } }) => {
-          this.saveMsg.set(err?.error?.message ?? 'Erro ao guardar.');
+          this.saveMsg.set(err?.error?.message ?? 'Erro ao salvar.');
         },
       });
   }
@@ -204,7 +204,7 @@ export class CondominiumDetailComponent {
             res.reused
               ? 'Já existia cobrança para este mês; dados devolvidos.'
               : bonificado
-                ? 'Mês bonificado — registo local (sem cobrança Asaas).'
+                ? 'Mês bonificado — registro local (sem cobrança Asaas).'
                 : 'Cobrança criada na Asaas.',
           );
           this.refresh(id);

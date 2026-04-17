@@ -2,8 +2,8 @@
   <header class="adm-page__head">
     <h1 class="adm-page__title">Painel</h1>
     <p class="adm-page__lead">
-      Visão geral da plataforma: condomínios registados e cobranças SaaS em aberto
-      no mês corrente.
+      Visão geral da plataforma: condomínios cadastrados e cobranças SaaS em aberto
+      no mês atual.
     </p>
   </header>
 
@@ -49,7 +49,7 @@
             [disabled]="bulkLoading()"
             (click)="runBulk()"
           >
-            {{ bulkLoading() ? 'A processar…' : 'Gerar para todos os condomínios' }}
+            {{ bulkLoading() ? 'Processando…' : 'Gerar para todos os condomínios' }}
           </button>
           @if (bulkMsg()) {
             <p class="dash-bulk__msg">{{ bulkMsg() }}</p>
@@ -87,7 +87,7 @@
         </div>
       </section>
     } @else {
-      <p class="adm-loading">A carregar indicadores…</p>
+      <p class="adm-loading">Carregando indicadores…</p>
     }
   }
 </div>

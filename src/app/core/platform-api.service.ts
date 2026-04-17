@@ -89,6 +89,43 @@ export interface SaasPlanPriceTier {
   pricePerUnitCents: number;
 }
 
+/**
+ * Chaves canônicas de módulos habilitados/bloqueados por plano (espelham o
+ * menu do painel do condomínio). Mantém sincronizada com
+ * `condo-api/src/platform/saas-plan-features.ts` e
+ * `condo-web/src/app/core/condominium-plan-features.ts`.
+ */
+export const SAAS_PLAN_FEATURE_KEYS = [
+  'editCondominium',
+  'units',
+  'invitations',
+  'members',
+  'unitShortcuts',
+  'financialTransactions',
+  'financialStatement',
+  'funds',
+  'condoFees',
+  'planning',
+  'documents',
+] as const;
+
+export type SaasPlanFeatureKey = (typeof SAAS_PLAN_FEATURE_KEYS)[number];
+export type SaasPlanFeatures = Record<SaasPlanFeatureKey, boolean>;
+
+export const SAAS_PLAN_FEATURE_LABELS: Record<SaasPlanFeatureKey, string> = {
+  editCondominium: 'Editar condomínio',
+  units: 'Unidades',
+  invitations: 'Convites',
+  members: 'Membros',
+  unitShortcuts: 'Atalhos por unidade',
+  financialTransactions: 'Transações financeiras',
+  financialStatement: 'Extrato',
+  funds: 'Fundos',
+  condoFees: 'Taxas condominiais',
+  planning: 'Pautas / planejamento',
+  documents: 'Documentos',
+};
+
 export interface SaasPlanRow {
   id: number;
   name: string;
@@ -99,6 +136,8 @@ export interface SaasPlanRow {
   active: boolean;
   catalogBlurb?: string | null;
   notes: string | null;
+  /** `null` em planos legados = sem restrição (todos os módulos liberados). */
+  features?: Partial<SaasPlanFeatures> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -243,6 +282,7 @@ export class PlatformApiService {
     active?: boolean;
     notes?: string | null;
     catalogBlurb?: string | null;
+    features?: Partial<SaasPlanFeatures> | null;
   }): Observable<SaasPlanRow> {
     return this.http.post<SaasPlanRow>(`${this.base}/plans`, body);
   }
@@ -257,6 +297,7 @@ export class PlatformApiService {
       active: boolean;
       notes: string | null;
       catalogBlurb: string | null;
+      features: Partial<SaasPlanFeatures> | null;
     }>,
   ): Observable<SaasPlanRow> {
     return this.http.patch<SaasPlanRow>(`${this.base}/plans/${planId}`, body);

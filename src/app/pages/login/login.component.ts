@@ -47,8 +47,8 @@ export class LoginComponent {
           const m =
             err?.error?.message ??
             (err?.status === 401
-              ? 'E-mail ou palavra-passe inválidos.'
-              : 'Não foi possível iniciar sessão.');
+              ? 'E-mail ou senha inválidos.'
+              : 'Não foi possível entrar.');
           this.error.set(m);
         },
       });

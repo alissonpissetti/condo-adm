@@ -112,7 +112,7 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Preço</th>
-            <th>Activo</th>
+            <th>Ativo</th>
             <th>Padrão</th>
             <th></th>
           </tr>
@@ -130,7 +130,7 @@
               </td>
               <td>
                 @if (editingId === p.id) {
-                  <span class="cell-muted">Ver secção abaixo</span>
+                  <span class="cell-muted">Ver seção abaixo</span>
                 } @else {
                   {{ priceLabel(p) }}
                 }
@@ -138,7 +138,7 @@
               <td>
                 @if (editingId === p.id) {
                   <label class="chk"
-                    ><input type="checkbox" [(ngModel)]="editActive" /> Activo</label
+                    ><input type="checkbox" [(ngModel)]="editActive" /> Ativo</label
                   >
                 } @else {
                   <span
@@ -163,7 +163,7 @@
                     class="adm-btn adm-btn--primary"
                     (click)="saveEdit(p.id)"
                   >
-                    Guardar
+                    Salvar
                   </button>
                   <button
                     type="button"
@@ -195,7 +195,7 @@
                       (click)="remove(p)"
                       [disabled]="duplicatingId() !== null || removingId() !== null"
                     >
-                      {{ removingId() === p.id ? 'A remover…' : 'Remover' }}
+                      {{ removingId() === p.id ? 'Removendo…' : 'Remover' }}
                     </button>
                     <button
                       type="button"
@@ -314,6 +314,31 @@
                         />
                       </div>
                     }
+
+                    <div class="plans-features">
+                      <div class="plans-features__head">
+                        <h3 class="plans-features__title">
+                          Recursos do painel habilitados neste plano
+                        </h3>
+                        <p class="plans-features__lead">
+                          Itens desmarcados aparecem com <strong>cadeado</strong> no menu do
+                          condomínio e redirecionam para a tela de
+                          <strong>upgrade de plano</strong>.
+                        </p>
+                      </div>
+                      <div class="plans-features__grid">
+                        @for (k of featureKeys; track k) {
+                          <label class="chk chk--block plans-features__item">
+                            <input
+                              type="checkbox"
+                              [checked]="editFeatures[k]"
+                              (change)="toggleEditFeature(k, $event)"
+                            />
+                            <span>{{ featureLabels[k] }}</span>
+                          </label>
+                        }
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>

@@ -138,10 +138,10 @@ export class VouchersComponent {
       .subscribe({
         next: () => {
           this.editingId = null;
-          this.msg.set('Voucher actualizado.');
+          this.msg.set('Voucher atualizado.');
           this.refresh();
         },
-        error: () => this.msg.set('Erro ao guardar.'),
+        error: () => this.msg.set('Erro ao salvar.'),
       });
   }
 }

@@ -4,19 +4,19 @@
   >
 
   <header class="adm-page__head">
-    <h1 class="adm-page__title">Faturação do condomínio</h1>
+    <h1 class="adm-page__title">Faturamento do condomínio</h1>
     <p class="adm-page__lead">
       A mensalidade é o <strong>plano do titular</strong> ×
       <strong>número de unidades</strong>, com eventuais
       <strong>vouchers</strong> pelo mês de referência. Gere cobranças na Asaas
-      (ou registo bonificado se o valor for zero).
+      (ou registro bonificado se o valor for zero).
     </p>
   </header>
 
   @if (error()) {
     <div class="adm-alert adm-alert--error">{{ error() }}</div>
   } @else if (!billingLoaded()) {
-    <p class="adm-loading">A carregar…</p>
+    <p class="adm-loading">Carregando…</p>
   } @else {
     <div class="detail__grid">
       <section class="adm-card detail-card detail-card--billing">
@@ -30,7 +30,7 @@
             </svg>
           </div>
           <div>
-            <h2 class="adm-card__title">Perfil de faturação</h2>
+            <h2 class="adm-card__title">Perfil de faturamento</h2>
             <p class="adm-card__desc">
               Estado do contrato SaaS e notas internas. O valor da cobrança vem do
               plano × unidades (ver pré-visualização).
@@ -84,7 +84,7 @@
               @if (pr.referenceMonth) {
                 <p class="detail-pricing__hint">
                   Mês de referência <code>{{ pr.referenceMonth }}</code> — altere em «Gerar cobrança»
-                  e saia do campo para actualizar.
+                  e saia do campo para atualizar.
                 </p>
               }
             </div>
@@ -119,7 +119,7 @@
             }
             <div class="adm-form-actions detail__field-full">
               <button class="adm-btn adm-btn--primary" type="submit">
-                Guardar perfil
+                Salvar perfil
               </button>
             </div>
           </form>
@@ -140,8 +140,8 @@
           <div>
             <h2 class="adm-card__title">Voucher do catálogo</h2>
             <p class="adm-card__desc">
-              Introduza o <strong>código</strong> definido em Plataforma → Vouchers.
-              Só vouchers <strong>activos</strong> são aceites. O desconto na
+              Informe o <strong>código</strong> definido em Plataforma → Vouchers.
+              Só vouchers <strong>ativos</strong> são aceitos. O desconto na
               pré-visualização depende do mês de referência e do período do voucher.
             </p>
           </div>
@@ -156,7 +156,7 @@
                 <span class="detail-voucher-status__badge">Associado</span>
                 @if (!cv.active) {
                   <span class="detail-voucher-status__badge detail-voucher-status__badge--warn"
-                    >Inactivo</span
+                    >Inativo</span
                   >
                 }
               </div>

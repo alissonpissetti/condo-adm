@@ -4,7 +4,7 @@
     <p class="adm-page__lead">
       Defina um <strong>nome</strong> e um <strong>código</strong> único (ex.
       <code>PROMO2026</code>). No cadastro de cada
-      <strong>condomínio</strong>, introduza esse código para aplicar o desconto
+      <strong>condomínio</strong>, informe esse código para aplicar o desconto
       sobre a mensalidade SaaS. O desconto só vale nos meses
       <code>YYYY-MM</code> que intersectam o período de validade do voucher.
     </p>
@@ -75,7 +75,7 @@
             <th>Código</th>
             <th>%</th>
             <th>Período</th>
-            <th>Activo</th>
+            <th>Ativo</th>
             <th></th>
           </tr>
         </thead>
@@ -128,7 +128,7 @@
               <td>
                 @if (editingId === v.id) {
                   <label class="chk"
-                    ><input type="checkbox" [(ngModel)]="editActive" /> Activo</label
+                    ><input type="checkbox" [(ngModel)]="editActive" /> Ativo</label
                   >
                 } @else {
                   <span
@@ -153,7 +153,7 @@
                       class="adm-btn adm-btn--primary"
                       (click)="saveEdit(v.id)"
                     >
-                      Guardar
+                      Salvar
                     </button>
                     <button
                       type="button"

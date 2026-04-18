@@ -123,7 +123,7 @@ export const SAAS_PLAN_FEATURE_LABELS: Record<SaasPlanFeatureKey, string> = {
   funds: 'Fundos',
   condoFees: 'Taxas condominiais',
   planning: 'Pautas / planejamento',
-  documents: 'Documentos',
+  documents: 'Comunicação',
 };
 
 export interface SaasPlanRow {

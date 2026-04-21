@@ -1,0 +1,151 @@
+@if (loading()) {
+  <div class="adm-page">
+    <p class="cell-muted">A carregar…</p>
+  </div>
+} @else if (loadError()) {
+  <div class="adm-page">
+    <div class="adm-alert adm-alert--error">{{ loadError() }}</div>
+    <button type="button" class="adm-btn adm-btn--secondary" (click)="backToList()">
+      Voltar à lista
+    </button>
+  </div>
+} @else {
+  @if (ticket(); as tk) {
+  <div class="ticket-full">
+    <header class="ticket-full__toolbar">
+      <button type="button" class="adm-btn adm-btn--secondary" (click)="backToList()">
+        ← Lista de suporte
+      </button>
+    </header>
+
+    <div class="adm-page ticket-full__body">
+      <header class="ticket-full__record">
+        <div class="ticket-full__meta">
+          <div class="ticket-full__meta-block">
+            <span class="ticket-full__label">Solicitante</span>
+            <span class="ticket-full__value ticket-full__value--strong">{{ tk.userEmail }}</span>
+            @if (tk.userFullName) {
+              <span class="ticket-full__sub">{{ tk.userFullName }}</span>
+            }
+            @if (tk.userPhone) {
+              <span class="ticket-full__sub">{{ tk.userPhone }}</span>
+            }
+          </div>
+          <div class="ticket-full__meta-block">
+            <span class="ticket-full__label">Condomínio</span>
+            <span class="ticket-full__value">{{ tk.condominiumName ?? '—' }}</span>
+          </div>
+          <div class="ticket-full__meta-block">
+            <span class="ticket-full__label">Tipo</span>
+            <span class="ticket-full__value">{{ categoryLabel(tk.category) }}</span>
+          </div>
+          <div class="ticket-full__meta-block">
+            <span class="ticket-full__label">Aberto em</span>
+            <span class="ticket-full__value">{{ tk.createdAt | date: 'medium' }}</span>
+          </div>
+          <div class="ticket-full__meta-block">
+            <span class="ticket-full__label">Estado</span>
+            <div class="ticket-full__status-row">
+              <select
+                class="adm-select"
+                [value]="statusDraft()"
+                (change)="setStatusDraftFromEvent($event)"
+              >
+                @for (opt of statusOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+              <button
+                type="button"
+                class="adm-btn adm-btn--primary"
+                [disabled]="patchBusy() || statusDraft() === tk.status"
+                (click)="saveStatus()"
+              >
+                {{ patchBusy() ? '…' : 'Guardar estado' }}
+              </button>
+            </div>
+            @if (patchError()) {
+              <div class="adm-alert adm-alert--error ticket-full__inline-alert">{{ patchError() }}</div>
+            }
+          </div>
+        </div>
+        <h1 class="ticket-full__title">{{ tk.title }}</h1>
+      </header>
+
+      <section class="ticket-full__section" aria-labelledby="pedido-inicial">
+        <h2 id="pedido-inicial" class="ticket-full__h2">Pedido inicial</h2>
+        <pre class="ticket-full__pre">{{ tk.body }}</pre>
+      </section>
+
+      <section class="ticket-full__section" aria-labelledby="link-cliente">
+        <h2 id="link-cliente" class="ticket-full__h2">Link para o cliente</h2>
+        <p class="cell-muted ticket-full__lede">
+          O mesmo link é enviado por e-mail quando responde ao chamado. O cliente pode abrir sem
+          estar no painel, desde que use o endereço completo (com o parâmetro de segurança).
+        </p>
+        @if (tk.clientFollowUrl) {
+          <code class="ticket-full__url">{{ tk.clientFollowUrl }}</code>
+        } @else {
+          <p class="cell-muted">Configure <code>FRONTEND_PUBLIC_URL</code> na API.</p>
+        }
+        <button type="button" class="adm-btn adm-btn--secondary" (click)="copyClientLink()">
+          Copiar link
+        </button>
+        @if (copyHint()) {
+          <p class="ticket-full__copy-hint">{{ copyHint() }}</p>
+        }
+      </section>
+
+      <section class="ticket-full__section" aria-labelledby="historico">
+        <h2 id="historico" class="ticket-full__h2">Mensagens</h2>
+        <ul class="ticket-full__thread">
+          @for (m of messages(); track m.id) {
+            <li
+              class="ticket-full__msg"
+              [class.ticket-full__msg--admin]="m.fromPlatformAdmin"
+              [class.ticket-full__msg--user]="!m.fromPlatformAdmin"
+            >
+              <div class="ticket-full__msg-head">
+                <strong>{{
+                  m.fromPlatformAdmin
+                    ? 'Equipa (' + (m.authorEmail ?? m.authorUserId.slice(0, 8)) + '…)'
+                    : 'Cliente'
+                }}</strong>
+                <span class="cell-muted">{{ m.createdAt | date: 'short' }}</span>
+              </div>
+              <pre class="ticket-full__msg-body">{{ m.body }}</pre>
+            </li>
+          }
+        </ul>
+      </section>
+
+      @if (tk.status !== 'closed') {
+        <section class="ticket-full__section" aria-labelledby="responder">
+          <h2 id="responder" class="ticket-full__h2">Responder ao cliente</h2>
+          <p class="cell-muted ticket-full__lede">
+            A sua mensagem será enviada por e-mail ao solicitante com o link para acompanhar o
+            chamado no site.
+          </p>
+          @if (replyError()) {
+            <div class="adm-alert adm-alert--error">{{ replyError() }}</div>
+          }
+          @if (replySuccess()) {
+            <div class="adm-alert adm-alert--ok">{{ replySuccess() }}</div>
+          }
+          <form [formGroup]="replyForm" (ngSubmit)="submitReply()">
+            <label class="ticket-full__field">
+              <span class="ticket-full__field-label">Mensagem</span>
+              <textarea formControlName="body" rows="6"></textarea>
+            </label>
+            <button type="submit" class="adm-btn adm-btn--primary" [disabled]="replyBusy()">
+              {{ replyBusy() ? 'A enviar…' : 'Enviar resposta' }}
+            </button>
+          </form>
+        </section>
+      } @else {
+        <p class="cell-muted">Chamado encerrado — não é possível enviar novas respostas.</p>
+      }
+    </div>
+  </div>
+  }
+}

@@ -1,0 +1,41 @@
+/* Complementos locais; base em styles.scss (adm-page, adm-table, adm-pager, adm-btn, adm-alert). */
+
+.adm-table__row-click {
+  cursor: pointer;
+}
+
+.adm-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: min(100%, 14rem);
+}
+
+.adm-field__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--adm-text-secondary);
+}
+
+.adm-select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--adm-border);
+  background: var(--adm-surface);
+  color: var(--adm-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.cell-sub {
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+}

@@ -204,6 +204,59 @@ export interface BulkChargeResultRow {
   charge?: SaasChargeRow;
 }
 
+export type PlatformSupportTicketCategory =
+  | 'bug'
+  | 'correction'
+  | 'feature'
+  | 'improvement'
+  | 'other';
+
+export type PlatformSupportTicketStatus =
+  | 'open'
+  | 'triaged'
+  | 'in_progress'
+  | 'resolved'
+  | 'closed';
+
+export interface PlatformSupportTicketRow {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userPhone: string | null;
+  userFullName: string | null;
+  condominiumId: string | null;
+  condominiumName: string | null;
+  category: PlatformSupportTicketCategory;
+  title: string;
+  body: string;
+  status: PlatformSupportTicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  /** Link com token para o cliente (e-mail); null se `FRONTEND_PUBLIC_URL` não estiver definida na API. */
+  clientFollowUrl: string | null;
+}
+
+export interface PlatformSupportTicketMessage {
+  id: string;
+  body: string;
+  createdAt: string;
+  fromPlatformAdmin: boolean;
+  authorUserId: string;
+  authorEmail?: string;
+}
+
+export interface PlatformSupportTicketConversation {
+  ticket: PlatformSupportTicketRow;
+  messages: PlatformSupportTicketMessage[];
+}
+
+export interface PlatformSupportTicketsPage {
+  items: PlatformSupportTicketRow[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlatformApiService {
   private readonly http = inject(HttpClient);
@@ -386,6 +439,52 @@ export class PlatformApiService {
   }): Observable<{ results: BulkChargeResultRow[] }> {
     return this.http.post<{ results: BulkChargeResultRow[] }>(
       `${this.base}/billing/charges/bulk`,
+      body,
+    );
+  }
+
+  supportTickets(
+    page = 1,
+    limit = 20,
+    status?: PlatformSupportTicketStatus | '' | null,
+  ): Observable<PlatformSupportTicketsPage> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('limit', String(limit));
+    const s = status?.trim();
+    if (s) {
+      params = params.set('status', s);
+    }
+    return this.http.get<PlatformSupportTicketsPage>(
+      `${this.base}/support-tickets`,
+      { params },
+    );
+  }
+
+  patchSupportTicket(
+    ticketId: string,
+    body: { status: PlatformSupportTicketStatus },
+  ): Observable<PlatformSupportTicketRow> {
+    return this.http.patch<PlatformSupportTicketRow>(
+      `${this.base}/support-tickets/${ticketId}`,
+      body,
+    );
+  }
+
+  supportTicketConversation(
+    ticketId: string,
+  ): Observable<PlatformSupportTicketConversation> {
+    return this.http.get<PlatformSupportTicketConversation>(
+      `${this.base}/support-tickets/${ticketId}/conversation`,
+    );
+  }
+
+  postSupportTicketMessage(
+    ticketId: string,
+    body: { body: string },
+  ): Observable<PlatformSupportTicketConversation> {
+    return this.http.post<PlatformSupportTicketConversation>(
+      `${this.base}/support-tickets/${ticketId}/messages`,
       body,
     );
   }

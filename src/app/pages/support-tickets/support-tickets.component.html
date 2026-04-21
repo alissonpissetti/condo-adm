@@ -1,0 +1,91 @@
+<div class="adm-page">
+  <header class="adm-page__head">
+    <h1 class="adm-page__title">Suporte</h1>
+    <p class="adm-page__lead">
+      Solicitações enviadas pelos utilizadores. Clique num chamado para abrir em ecrã completo,
+      ver o histórico e responder — o cliente recebe e-mail com link para acompanhar no site.
+    </p>
+  </header>
+
+  <div class="adm-toolbar">
+    <label class="adm-field">
+      <span class="adm-field__label">Filtrar por estado</span>
+      <select
+        class="adm-select"
+        [value]="filterStatus()"
+        (change)="setFilterFromEvent($event)"
+      >
+        @for (opt of statusOptions; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (error()) {
+    <div class="adm-alert adm-alert--error">{{ error() }}</div>
+  } @else {
+    <div class="adm-table-shell">
+      <div class="adm-table-scroll">
+        <table class="adm-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Utilizador</th>
+              <th>Tipo</th>
+              <th>Assunto</th>
+              <th>Condomínio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of items(); track t.id) {
+              <tr
+                class="adm-table__row-click"
+                (click)="openTicket(t.id)"
+                (keydown.enter)="openTicket(t.id)"
+                (keydown.space)="$event.preventDefault(); openTicket(t.id)"
+                tabindex="0"
+                role="link"
+              >
+                <td class="cell-muted">{{ t.createdAt | date: 'short' }}</td>
+                <td>
+                  <div class="cell-strong">{{ t.userEmail }}</div>
+                  @if (t.userFullName) {
+                    <div class="cell-muted cell-sub">{{ t.userFullName }}</div>
+                  }
+                </td>
+                <td>{{ categoryLabel(t.category) }}</td>
+                <td class="cell-strong">{{ t.title }}</td>
+                <td>{{ t.condominiumName ?? '—' }}</td>
+                <td>{{ statusLabel(t.status) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="adm-pager">
+      <span class="adm-pager__meta">
+        Página {{ page() }} de {{ totalPages() }} · {{ total() }} solicitações
+      </span>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() <= 1"
+        (click)="prev()"
+      >
+        Anterior
+      </button>
+      <button
+        type="button"
+        class="adm-btn adm-btn--secondary"
+        [disabled]="page() * limit >= total()"
+        (click)="next()"
+      >
+        Próximo
+      </button>
+    </div>
+  }
+</div>

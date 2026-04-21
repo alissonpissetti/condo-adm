@@ -33,6 +33,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'suporte',
+        loadComponent: () =>
+          import('./pages/support-tickets/support-tickets.component').then(
+            (m) => m.SupportTicketsComponent,
+          ),
+      },
+      {
+        path: 'suporte/:ticketId',
+        loadComponent: () =>
+          import('./pages/support-tickets/support-ticket-detail.component').then(
+            (m) => m.SupportTicketDetailComponent,
+          ),
+      },
+      {
         path: 'planos',
         loadComponent: () =>
           import('./pages/plans/plans.component').then((m) => m.PlansComponent),

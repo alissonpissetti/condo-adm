@@ -33,6 +33,7 @@
               <th>Data</th>
               <th>Utilizador</th>
               <th>Tipo</th>
+              <th>Categoria</th>
               <th>Assunto</th>
               <th>Condomínio</th>
               <th>Estado</th>
@@ -55,6 +56,7 @@
                     <div class="cell-muted cell-sub">{{ t.userFullName }}</div>
                   }
                 </td>
+                <td>{{ targetLabel(t.target) }}</td>
                 <td>{{ categoryLabel(t.category) }}</td>
                 <td class="cell-strong">{{ t.title }}</td>
                 <td>{{ t.condominiumName ?? '—' }}</td>

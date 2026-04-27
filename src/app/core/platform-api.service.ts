@@ -204,12 +204,20 @@ export interface BulkChargeResultRow {
   charge?: SaasChargeRow;
 }
 
+export type PlatformSupportTicketTarget = 'platform' | 'condominium';
+
 export type PlatformSupportTicketCategory =
   | 'bug'
   | 'correction'
   | 'feature'
   | 'improvement'
-  | 'other';
+  | 'other'
+  | 'condo_complaint'
+  | 'condo_request'
+  | 'condo_order'
+  | 'condo_information'
+  | 'condo_agenda_suggestion'
+  | 'condo_other';
 
 export type PlatformSupportTicketStatus =
   | 'open'
@@ -224,6 +232,7 @@ export interface PlatformSupportTicketRow {
   userEmail: string;
   userPhone: string | null;
   userFullName: string | null;
+  target: PlatformSupportTicketTarget;
   condominiumId: string | null;
   condominiumName: string | null;
   category: PlatformSupportTicketCategory;

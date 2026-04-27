@@ -5,6 +5,7 @@ import {
   PlatformApiService,
   type PlatformSupportTicketRow,
   type PlatformSupportTicketStatus,
+  type PlatformSupportTicketTarget,
 } from '../../core/platform-api.service';
 
 const STATUS_OPTIONS: { value: PlatformSupportTicketStatus | ''; label: string }[] = [
@@ -22,6 +23,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   improvement: 'Melhoria',
   feature: 'Nova funcionalidade',
   other: 'Outro',
+  condo_complaint: 'Reclamação',
+  condo_request: 'Solicitação',
+  condo_order: 'Pedido',
+  condo_information: 'Informação',
+  condo_agenda_suggestion: 'Sugestão de pauta condominial',
+  condo_other: 'Outros',
 };
 
 @Component({
@@ -36,6 +43,8 @@ export class SupportTicketsComponent {
 
   protected readonly statusOptions = STATUS_OPTIONS;
   protected readonly categoryLabel = (c: string) => CATEGORY_LABELS[c] ?? c;
+  protected readonly targetLabel = (t: PlatformSupportTicketTarget | undefined) =>
+    t === 'condominium' ? 'Ao condomínio' : 'À plataforma';
   protected readonly statusLabel = (s: PlatformSupportTicketStatus) =>
     STATUS_OPTIONS.find((o) => o.value === s)?.label ?? s;
 

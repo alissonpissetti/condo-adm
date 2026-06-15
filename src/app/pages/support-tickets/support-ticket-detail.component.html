@@ -1,6 +1,6 @@
 @if (loading()) {
   <div class="adm-page">
-    <p class="cell-muted">A carregar…</p>
+    <p class="cell-muted">Carregando…</p>
   </div>
 } @else if (loadError()) {
   <div class="adm-page">
@@ -65,7 +65,7 @@
                 [disabled]="patchBusy() || statusDraft() === tk.status"
                 (click)="saveStatus()"
               >
-                {{ patchBusy() ? '…' : 'Guardar estado' }}
+                {{ patchBusy() ? '…' : 'Salvar estado' }}
               </button>
             </div>
             @if (patchError()) {
@@ -112,7 +112,7 @@
               <div class="ticket-full__msg-head">
                 <strong>{{
                   m.fromPlatformAdmin
-                    ? 'Equipa (' + (m.authorEmail ?? m.authorUserId.slice(0, 8)) + '…)'
+                    ? 'Equipe (' + (m.authorEmail ?? m.authorUserId.slice(0, 8)) + '…)'
                     : 'Cliente'
                 }}</strong>
                 <span class="cell-muted">{{ m.createdAt | date: 'short' }}</span>
@@ -142,7 +142,7 @@
               <textarea formControlName="body" rows="6"></textarea>
             </label>
             <button type="submit" class="adm-btn adm-btn--primary" [disabled]="replyBusy()">
-              {{ replyBusy() ? 'A enviar…' : 'Enviar resposta' }}
+              {{ replyBusy() ? 'Enviando…' : 'Enviar resposta' }}
             </button>
           </form>
         </section>

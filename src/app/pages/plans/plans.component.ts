@@ -356,6 +356,15 @@ export class PlansComponent {
             pricePerUnitCents: t.pricePerUnitCents,
           }))
         : undefined;
+    const feats = PlansComponent.allFeaturesEnabled();
+    if (p.features) {
+      for (const k of SAAS_PLAN_FEATURE_KEYS) {
+        const v = p.features[k];
+        if (typeof v === 'boolean') {
+          feats[k] = v;
+        }
+      }
+    }
     this.duplicatingId.set(p.id);
     this.api
       .createPlan({
@@ -366,6 +375,7 @@ export class PlansComponent {
         active: false,
         catalogBlurb: p.catalogBlurb ?? null,
         notes: p.notes ?? null,
+        features: feats,
       })
       .subscribe({
         next: () => {
